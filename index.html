@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kırık, Çıkık ve Burkulmalar - Sağlık Bilgisi</title>
+    <style>
+        /* ===== GENEL AYARLAR ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Mobilde tıklama efektini kaldırır */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== ÜST MENÜ (SABİT) ===== */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-buttons button {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            touch-action: manipulation; /* Dokunmatik gecikmeyi önler */
+        }
+
+        .nav-buttons button:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .nav-buttons button:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        /* ===== SLAYT ALANI ===== */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .slide {
+            display: none; /* Varsayılan olarak gizli */
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== BAŞLIKLAR ===== */
+        h2 {
+            color: #c0392b;
+            font-size: 2.2rem;
+            border-bottom: 4px solid #e74c3c;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        /* ===== BİLGİ KUTULARI ===== */
+        .info-box {
+            background: #f8f9fa;
+            border-left: 8px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .warning-box {
+            background: #fdedec;
+            border-left: 8px solid #e74c3c;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .warning-box h3 {
+            color: #c0392b;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            padding-left: 35px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        ul li::before {
+            content: "✔️";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1.2rem;
+        }
+
+        /* ===== GÖRSEL ALANI ===== */
+        .image-area {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: #e8f8f5;
+            border-radius: 15px;
+            border: 2px dashed #1abc9c;
+        }
+
+        .image-area .placeholder-icon {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .image-area p {
+            font-size: 1rem;
+            color: #16a085;
+            font-style: italic;
+        }
+
+        /* ===== SORU KUTUSU ===== */
+        .question-box {
+            background: #fff9e6;
+            border: 3px solid #f1c40f;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .question-box h3 {
+            color: #d35400;
+            justify-content: center;
+        }
+
+        .question-box p {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 15px 0;
+        }
+
+        .btn-reveal {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-reveal:hover {
+            background-color: #e67e22;
+        }
+
+        .answer {
+            display: none;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: #27ae60;
+            background: #eafaf1;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        /* ===== SLAYT NUMARASI ===== */
+        .slide-number {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #95a5a6;
+            font-weight: bold;
+        }
+
+        /* ===== MOBİL UYUMLULUK (TELEFON) ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 1.1rem;
+                text-align: center;
+            }
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            .nav-buttons button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                flex: 1;
+            }
+            .slide {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            h2 {
+                font-size: 1.6rem;
+            }
+            h3 {
+                font-size: 1.3rem;
+            }
+            p, ul li {
+                font-size: 1rem;
+            }
+            .image-area .placeholder-icon {
+                font-size: 3.5rem;
+            }
+            .question-box p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Çok küçük ekranlar (eski telefonlar) */
+        @media (max-width: 400px) {
+            h2 { font-size: 1.4rem; }
+            h3 { font-size: 1.1rem; }
+            p, ul li { font-size: 0.95rem; }
+            .nav-buttons button { font-size: 0.8rem; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÜST MENÜ -->
+    <header class="header">
+        <h1>🏥 Kırık, Çıkık ve Burkulmalar</h1>
+        <div class="nav-buttons">
+            <button id="prevBtn" disabled>⬅️ Önceki</button>
+            <button id="nextBtn">Sonraki ➡️</button>
+        </div>
+    </header>
+
+    <!-- SLAYT İÇERİKLERİ -->
+    <main class="main-container">
+        
+        <!-- SLAYT 1 -->
+        <div class="slide active" id="slide1">
+            <h2>🦴 Kırık Nedir?</h2>
+            
+            <div class="info-box">
+                <h3>📌 Tanım</h3>
+                <p>Kırık, kemik bütünlüğünün kendiliğinden ya da darbe sonucu bozulmasıdır. Özellikle yaşlılık döneminde kemiklerin zayıflamasıyla birlikte kendiliğinden kırık oluşma riski artar.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>🔍 Kırık Çeşitleri</h3>
+                <ul>
+                    <li><strong>Kapalı Kırık:</strong> Kemik bütünlüğü bozulmasına rağmen deri sağlam kalır.</li>
+                    <li><strong>Açık Kırık:</strong> Deri bütünlüğü de bozulur, kırık uçları vücut dışına çıkabilir. <em>(Kanama ve enfeksiyon riski yüksektir!)</em></li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>🚨 Belirtiler</h3>
+                <ul>
+                    <li>Hareketle artan şiddetli ağrı</li>
+                    <li>Kırık bölgesinde şekil bozukluğu</li>
+                    <li>Hareket kaybı</li>
+                    <li>Ödem ve kanamaya bağlı morarma</li>
+                </ul>
+                <p><strong>Önemli:</strong> Kırıklar sadece kemiği değil; çevresindeki damar, sinir ve kasları da yaralayabilir.</p>
+            </div>
+
+            <div class="image-area">
+                <span class="placeholder-icon">🩹🦴</span>
+                <p><em>Görsel: Kırık kemik ve çevre dokuların etkilenmesi.</em></p>
+            </div>
+
+            <div class="slide-number">Slayt 1 / 4</div>
+        </div>
+
+        <!-- SLAYT 2 -->
+        <div class="slide" id="slide2">
+            <h2>🤕 Burkulma</h2>
+
+            <div class="info-box">
+                <h3>📌 Tanım</h3>
+                <p>Burkulma, eklemi oluşturan kemiklerin normal hareket sınırlarının dışına zorlanmasıyla, eklem kapsülü ve bağların gerilmesi ya da zedelenmesi sonucu oluşan bir yaralanmadır.</p>
+                <p><strong>Nasıl Olur?</strong> Genellikle ani dönme, ters basma veya düşme sırasında görülür.</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>🚨 Belirtiler</h3>
+                <ul>
+                    <li>Ekleme bölgesinde ağrı</li>
+                    <li>Kızarıklık, morarma ve şişlik</li>
+                    <li>Eklemin işlevini kaybetmesi (hareket kısıtlılığı)</li>
+                    <li>Günlük aktivitelerin yapılmasını zorlaştırması</li>
+                </ul>
+            </div>
+
+            <div class="image-area">
+                <span class="placeholder-icon">🦵🤕</span>
+                <p><em>Görsel: Burkulma sonrası eklem bölgesindeki şişlik ve morarma.</em></p>
+            </div>
+
+            <div class="question-box">
+                <h3>🤔 Düşünelim!</h3>
+                <p>Burkulma ile kırık arasındaki en temel fark sizce nedir?</p>
+                <button class="btn-reveal" onclick="toggleAnswer('ans2')">Cevabı Göster</button>
+                <div class="answer" id="ans2">
+                    Burkulmada kemik bütünlüğü bozulmaz, sadece bağlar ve eklem kapsülü zedelenir. Kırıkta ise kemiğin kendisi hasar görür.
+                </div>
+            </div>
+
+            <div class="slide-number">Slayt 2 / 4</div>
+        </div>
+
+        <!-- SLAYT 3 -->
+        <div class="slide" id="slide3">
+            <h2>🚑 Çıkık</h2>
+
+            <div class="info-box">
+                <h3>📌 Tanım</h3>
+                <p>Çıkık, eklemi oluşturan kemiklerin darbe veya ani zorlanma sonucu <strong>kalıcı olarak</strong> normal yerinden ayrılması durumudur.</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>🚨 Belirtiler ve Acil Durum</h3>
+                <ul>
+                    <li>Eklemin işlevini kaybetmesi</li>
+                    <li>Belirgin bir eklem bozukluğu ortaya çıkması</li>
+                    <li>Yoğun ağrı, şişlik ve kızarıklık</li>
+                </ul>
+                <p><strong>Dikkat:</strong> Bu durum acil müdahale gerektiren ciddi bir sağlık problemidir.</p>
+            </div>
+
+            <div class="image-area">
+                <span class="placeholder-icon">💪🚑</span>
+                <p><em>Görsel 4.17: Çıkık omuz ekleminin tespiti (Kol askıya alınmış).</em></p>
+            </div>
+
+            <div class="slide-number">Slayt 3 / 4</div>
+        </div>
+
+        <!-- SLAYT 4 -->
+        <div class="slide" id="slide4">
+            <h2>🩺 İlk Yardım Adımları</h2>
+
+            <div class="warning-box">
+                <h3>⚠️ Çıkık Durumunda Altın Kurallar</h3>
+                <ul>
+                    <li><strong>Tespit:</strong> Çıkık eklem bulunduğu şekilde tespit edilir.</li>
+                    <li><strong>Müdahale Etme:</strong> Çıkık <strong>KESİNLİKLE</strong> yerine oturtulmaya çalışılmaz!</li>
+                    <li><strong>Ağızdan Besleme:</strong> Hasta/yaralıya ağızdan hiçbir şey verilmez.</li>
+                    <li><strong>Kontrol:</strong> Çıkığın olduğu bölgede deri rengi, nabız ve ısı kontrolü yapılır.</li>
+                    <li><strong>Ağrı Yönetimi:</strong> Ağrı için soğuk uygulama yapılır (Buz bir havluya sarılarak uygulanabilir).</li>
+                    <li><strong>Profesyonel Yardım:</strong> Derhal tıbbi yardım istenir (112).</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>📝 Özet</h3>
+                <p>Kırık, çıkık ve burkulmalarda temel amaç; hasarı arttırmadan, uzuvu hareketsiz hale getirip en kısa sürede sağlık kuruluşuna ulaştırmaktır. Bilinçsiz müdahaleler sinir ve damar hasarına yol açabilir.</p>
+            </div>
+
+            <div class="question-box">
+                <h3>🤔 Sunum Sonu Sorusu</h3>
+                <p>Bir arkadaşınızın omzu çıktığında, onu yerine oturtmaya çalışmak neden tehlikelidir?</p>
+                <button class="btn-reveal" onclick="toggleAnswer('ans4')">Cevabı Göster</button>
+                <div class="answer" id="ans4">
+                    Çünkü bilinçsiz müdahale, çevredeki damar ve sinirlere kalıcı hasar verebilir, hatta kırığa neden olabilir. Doğru olan, tespit edip 112'yi aramaktır.
+                </div>
+            </div>
+
+            <div class="slide-number">Slayt 4 / 4</div>
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT (HATA GİDERİLMİŞ) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // Slaytları gösteren fonksiyon
+            function showSlide(index) {
+                // Tüm slaytları gizle
+                slides.forEach(slide => slide.classList.remove('active'));
+                
+                // İlgili slaytı göster
+                if (slides[index]) {
+                    slides[index].classList.add('active');
+                }
+
+                // Buton durumlarını güncelle
+                prevBtn.disabled = (index === 0);
+                nextBtn.disabled = (index === slides.length - 1);
+            }
+
+            // Slayt değiştirme fonksiyonu
+            function changeSlide(direction) {
+                currentSlide += direction;
+                if (currentSlide < 0) currentSlide = 0;
+                if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+                showSlide(currentSlide);
+            }
+
+            // Buton olay dinleyicileri (Tıklama/Dokunma)
+            prevBtn.addEventListener('click', function() { changeSlide(-1); });
+            nextBtn.addEventListener('click', function() { changeSlide(1); });
+
+            // Klavye yön tuşları ile kontrol (Akıllı tahta kumandası için)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'ArrowRight') {
+                    changeSlide(1);
+                } else if (event.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                }
+            });
+
+            // Başlangıçta ilk slaytı göster
+            showSlide(currentSlide);
+        });
+
+        // Cevap gösterme fonksiyonu (Global scope'ta tanımlı)
+        function toggleAnswer(id) {
+            const answerDiv = document.getElementById(id);
+            if (answerDiv.style.display === 'block') {
+                answerDiv.style.display = 'none';
+            } else {
+                answerDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
